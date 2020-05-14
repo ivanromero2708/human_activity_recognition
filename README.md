@@ -8,6 +8,7 @@ The dataset from the project can be downloaded from the next link:
 https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip
 
 Files
+
 CodeBook.md it is a codebook where the variables, data, and transformations are described according to the process of getting and cleaning the raw data.
 
 gettin_cleaning_data.R: it is a script that performs all the stages of the data cleaning process, including the download steps and creation of directories. Following transformation steps are performed according to the project definition:
