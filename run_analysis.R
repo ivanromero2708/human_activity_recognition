@@ -1,36 +1,27 @@
 ### Getting the data
 
+## Cleaning Environment
+rm(list=ls())
+
 ## 1. Loading required packages
 library(dplyr)
 library(data.table)
 library(Hmisc)
 
 ## 2. Getting de raw dataset
+
 # Creating directory
 if(!file.exists("data")) {
-        dir.create("data")
-        rawdatafilename <- "human_activity_tracking.zip"
-        rawdatafileloc <- "./data"
-        rawdataurl <- https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip
-        download.file(rawdataurl, rawdatafilename, method = "curl")
-        }
-
-filename <- "human_activity_tracking.zip"
-
-# Checking if archieve already exists.
-if (!file.exists(filename)){
-  fileURL <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
-  download.file(fileURL, filename, method="curl")
-}  
-
-# Checking if folder exists
-if (!file.exists("UCI HAR Dataset")) { 
-  unzip(filename) 
+  dir.create("data")
+  rawdatafilename <- "human_activity_tracking.zip"
+  rawdatafileloc <- paste0("./data/",rawdatafilename)
+  rawdataurl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
+  download.file(rawdataurl, rawdatafileloc, method = "curl")
 }
-
+# Decompressing the zip file
+unzip(rawdatafileloc, exdir = "./data") 
 
 # 3. Assigning all data frames
-
 
 ## Cleaning the data
 
