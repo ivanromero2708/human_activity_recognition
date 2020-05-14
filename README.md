@@ -11,7 +11,7 @@ Files
 
 CodeBook.md it is a codebook where the variables, data, and transformations are described according to the process of getting and cleaning the raw data.
 
-gettin_cleaning_data.R: it is a script that performs all the stages of the data cleaning process, including the download steps and creation of directories. Following transformation steps are performed according to the project definition:
+run_analysis.R: it is a script that performs all the stages of the data cleaning process, including the download steps and creation of directories. Following transformation steps are performed according to the project definition:
 1.	Merges the training and the test sets to create one data set.
 2.	Extracts only the measurements on the mean and standard deviation for each measurement.
 3.	Uses descriptive activity names to name the activities in the data set
