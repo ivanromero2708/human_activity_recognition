@@ -381,7 +381,8 @@ summary {
 </div>
 <div id="raw-data-description" class="section level2">
 <h2>3. Raw data description</h2>
-<p>The sensor signals (accelerometer and gyroscope) were pre-processed by applying noise filters and then sampled in fixed-width sliding windows of 2.56 sec and 50% overlap (128 readings/window).These signals can be found in <a href="./data/UCI%20HAR%20Dataset/test/Inertial%20Signals">the path for test data</a> and <a href="./data/UCI%20HAR%20Dataset/training/Inertial%20Signals">the path for training data</a> embeeded in the <a href="./data/UCI%20HAR%20Dataset">UCI HAR Dataset</a>. These signals are pre-processed for generating the raw data set used for this project as follows: The sensor acceleration signal, which has gravitational and body motion components, was separated using a Butterworth low-pass filter into body acceleration and gravity. The gravitational force is assumed to have only low frequency components, therefore a filter with 0.3 Hz cutoff frequency was used. From each window, a vector of features was obtained by calculating variables from the time and frequency domain. The dataset includes the following files:</p>
+<p>The sensor signals (accelerometer and gyroscope) were pre-processed by applying noise filters and then sampled in fixed-width sliding windows of 2.56 sec and 50% overlap (128 readings/window).These signals can be found in <a href="./data/UCI%20HAR%20Dataset/test/Inertial%20Signals">the path for test data</a> and <a href="./data/UCI%20HAR%20Dataset/training/Inertial%20Signals">the path for training data</a> embeeded in the <a href="./data/UCI%20HAR%20Dataset">UCI HAR Dataset</a>. These signals are pre-processed for generating the raw data set used for this project as follows: The sensor acceleration signal, which has gravitational and body motion components, was separated using a Butterworth low-pass filter into body acceleration and gravity. The gravitational force is assumed to have only low frequency components, therefore a filter with 0.3 Hz cutoff frequency was used. From each window, a vector of features was obtained by calculating variables from the time and frequency domain.</p>
+<p>The dataset includes the following files:</p>
 <ul>
 <li><p>“README.txt”&quot;</p></li>
 <li><p>‘features_info.txt’: Shows information about the variables used on the feature vector.</p></li>
@@ -400,18 +401,64 @@ summary {
 <li><p>‘train/Inertial Signals/body_gyro_x_train.txt’: The angular velocity vector measured by the gyroscope for each window sample. The units are radians/second.</p></li>
 </ul>
 </div>
-<div id="variables" class="section level2">
-<h2>Variables</h2>
-</div>
 <div id="data-transformations" class="section level2">
-<h2>Data Transformations</h2>
-<ol style="list-style-type: decimal">
-<li>Merges the training and the test sets to create one data set.</li>
-<li>Extracts only the measurements on the mean and standard deviation for each measurement.</li>
-<li>Uses descriptive activity names to name the activities in the data set</li>
-<li>Appropriately labels the data set with descriptive variable names.</li>
-<li>From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.</li>
-</ol>
+<h2>4. Data Transformations</h2>
+<p>The run_analysis.R script creates a directory called <strong>data</strong>, download the UCI HAR Dataset and decompressed in the created <strong>data</strong> directory. Then executes the required 5 steps from the assignment.</p>
+<div id="loading-required-packages" class="section level3">
+<h3>4.1. Loading required packages</h3>
+<p>This initial section of the script cleans the Global Environment and loads the package <strong>dplyr</strong></p>
+</div>
+<div id="directory-creation-and-dataset-downloading" class="section level3">
+<h3>4.2. Directory creation and dataset downloading</h3>
+<p>In case of non-existing, this section creates the data directory and downloads the raw dataset directories in the “human_activity_tracking.zip” file located in the recently created data directory.</p>
+</div>
+<div id="dataframe-assignation" class="section level3">
+<h3>4.3. Dataframe assignation</h3>
+<p><code>unzip(rawdatafileloc, exdir = &quot;./data&quot;)</code> decompressed the “human_activity_tracking.zip” to the <strong>UCI HAR Dataset</strong> into the previously created data directory.</p>
+<p><code>feature_labels &lt;- read.table(&quot;./data/UCI HAR Dataset/features.txt&quot;)</code> reads the features.txt file into a 561 rowns, 2 columns data frame in which the feature labels for the variables. The feature vector includes treated accelerometer and gyroscope 3-axial raw data from Smartphone sensors.</p>
+<p><code>activity_labels &lt;- read.table(&quot;./data/UCI HAR Dataset/activity_labels.txt&quot;)</code> read the activity_labels.txt file into a 6 rows, 2 columns data frame in which numeric classification labels and their activity names are linked.</p>
+<p><code>x_train &lt;- read.table(&quot;./data/UCI HAR Dataset/train/X_train.txt&quot;, col.names = feature_labels[[2]])</code> read the X_train.txt file into a 7352 rows, 561 columns in which the training set features for subjects and activitys are shown.</p>
+<p><code>y_train &lt;- read.table(&quot;./data/UCI HAR Dataset/train/y_train.txt&quot;, col.names = c(&quot;activity&quot;))</code> read the y_train.txt file into a 7352 rows, 1 column data frame in which the activities for different experimental conditions are shown.</p>
+<p><code>subject_train &lt;- read.table(&quot;./data/UCI HAR Dataset/train/subject_train.txt&quot;, col.names = c(&quot;subject&quot;))</code> read the subject_train.txt into a 7352 rows, 1 column data frame that shows the subjects for the different experimental train conditions</p>
+<p><code>x_test &lt;- read.table(&quot;./data/UCI HAR Dataset/test/X_test.txt&quot;, col.names = feature_labels[[2]])</code> read the X_test.txt file into a 2947 rows, 561 columns in which the testing set features for subjects and activitys are shown.</p>
+<p><code>y_test &lt;- read.table(&quot;./data/UCI HAR Dataset/test/y_test.txt&quot;, col.names = c(&quot;activity&quot;))</code> read the y_test.txt file into a 2947 rows, 1 column data frame in which the activities for different experimental conditions are shown.</p>
+<p><code>subject_test &lt;- read.table(&quot;./data/UCI HAR Dataset/test/subject_test.txt&quot;, col.names = c(&quot;subject&quot;))</code> read the subject_train.txt into a 2947 rows, 1 column data frame that shows the subjects for the different experimental test conditions</p>
+</div>
+<div id="training-and-test-dataset-merging" class="section level3">
+<h3>4.4. Training and test dataset merging</h3>
+<p><code>train_dataset &lt;- cbind(subject_train,y_train, x_train) test_dataset &lt;- cbind(subject_test,y_test, x_test)</code> In first instance, the train “tidy” dataset and the “train” dataset are created by column binding the subject, y and x data frames. These operations creates the train_dataset a data frame with 7352 rows, 563 columns and the test_dataset a data frame with 2947 rows, 563 columns.</p>
+<p><code>raw_dataset &lt;- rbind(train_dataset,test_dataset)</code> The raw data set is a row binding between the train tidy dataset and the test tidy data set. The raw_dataset is a data frame with 10299 rows, 563 columns.</p>
+</div>
+<div id="standard-deviation-and-mean-measurement-extraction" class="section level3">
+<h3>4.5. Standard deviation and mean measurement extraction</h3>
+<p><code>mean_stdpositions &lt;- grep(&quot;[Mm]ean|[Ss]td&quot;, colnames(raw_dataset))</code> this line of command extracts the position in which the strings <strong><em>mean</em></strong> or <strong><em>std</em></strong> appeared, including capital letters.</p>
+<p><code>tidydata &lt;- select(raw_dataset, c(&quot;subject&quot;,&quot;activity&quot;,all_of(mean_stdpositions)))</code> the command selects the column positions according to the mean_std positions vector. The tidydata data frame has 10299 rows and 88 columns.</p>
+</div>
+<div id="descriptive-activity-name-assignation" class="section level3">
+<h3>4.6 Descriptive activity name assignation</h3>
+<p><code>tidydata$activity &lt;- activity_labels[tidydata$activity, 2]</code> this line of command replace the values in the column “activity” from the tidydata data frame with the values of the second column of the activity labels data frame previously reported.</p>
+<p>These next line of commands assign appropiate names for the mean and std features:</p>
+<p><code>names(tidydata) &lt;- gsub(&quot;.&quot;, &quot;&quot;, names(tidydata), fixed = TRUE)</code></p>
+<p><code>colnames(tidydata) &lt;- gsub(&quot;subject&quot;,&quot;Subject&quot;, colnames(tidydata))</code></p>
+<p><code>colnames(tidydata) &lt;- gsub(&quot;activity&quot;,&quot;Activity&quot;, colnames(tidydata))</code></p>
+<p><code>colnames(tidydata) &lt;- gsub(&quot;^t&quot;,&quot;Time&quot;, colnames(tidydata))</code></p>
+<p><code>colnames(tidydata) &lt;- gsub(&quot;^f&quot;,&quot;Frequency&quot;, colnames(tidydata))</code></p>
+<p><code>colnames(tidydata) &lt;- gsub(&quot;Acc&quot;,&quot;Accelerometer&quot;, colnames(tidydata))</code></p>
+<p><code>colnames(tidydata) &lt;- gsub(&quot;mean&quot;,&quot;Mean&quot;, colnames(tidydata))</code></p>
+<p><code>colnames(tidydata) &lt;- gsub(&quot;std&quot;,&quot;Std&quot;, colnames(tidydata))</code></p>
+<p><code>colnames(tidydata) &lt;- gsub(&quot;Mag&quot;,&quot;Magnitude&quot;, colnames(tidydata))</code></p>
+<p><code>colnames(tidydata) &lt;- gsub(&quot;Gyro&quot;,&quot;Gyroscope&quot;, colnames(tidydata))</code></p>
+<p><code>colnames(tidydata) &lt;- gsub(&quot;BodyBody&quot;,&quot;Body&quot;, colnames(tidydata))</code></p>
+<p><code>colnames(tidydata) &lt;- gsub(&quot;gravity&quot;,&quot;Gravity&quot;, colnames(tidydata))</code></p>
+<p><code>colnames(tidydata) &lt;- gsub(&quot;angle&quot;,&quot;Angle&quot;, colnames(tidydata))</code></p>
+<p><code>colnames(tidydata) &lt;- gsub(&quot;tBody&quot;,&quot;TimeBody&quot;, colnames(tidydata))</code></p>
+<p><code>colnames(tidydata) &lt;- gsub(&quot;freq&quot;,&quot;Frequency&quot;, colnames(tidydata))</code></p>
+</div>
+<div id="creation-of-an-independent-tidy-dataset-for-the-average-of-each-variable-for-each-activity-and-each-subject" class="section level3">
+<h3>4.7 Creation of an independent tidy dataset for the average of each variable for each activity and each subject</h3>
+<p><code>tidydatastep5 &lt;- tidydata %&gt;% group_by(Subject, Activity) %&gt;%                  summarize_all(mean)</code> The group_by and summarize_all functions are applied to the tidydata data frame to obtain average values for all the 563 variables by activity and by subject, creating the data frame tidydatastep5 with 180 rows and 88 columns.</p>
+<p><code>write.table(tidydatastep5, &quot;TidyDataStep5.txt&quot;, row.name=FALSE)</code> This final line of command write the previously created tidydatastep5 into the archive TidyDataStep5.txt according to specifications exposed in the assignment.</p>
+</div>
 </div>
 </div>
 
